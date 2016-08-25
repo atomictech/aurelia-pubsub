@@ -1,18 +1,12 @@
-var _dec, _class;
-
 import { Stomp } from 'stompjs';
 import { inject } from 'aurelia-framework';
 import { Connector } from './connector';
 
-export let StompConnectorCreator = (_dec = inject(Stomp), _dec(_class = class StompConnectorCreator {
-  constructor(stomp) {
-    this.stomp = stomp;
-  }
-
+export let StompConnectorCreator = class StompConnectorCreator {
   static create(config) {
-    return new StompConnector(this.stomp, config);
+    return new StompConnector(Stomp, config);
   }
-}) || _class);
+};
 
 export let StompConnector = class StompConnector extends Connector {
   constructor(stomp, config = {}) {

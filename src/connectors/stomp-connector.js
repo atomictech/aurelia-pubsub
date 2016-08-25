@@ -2,14 +2,9 @@ import { Stomp } from 'stompjs';
 import { inject } from 'aurelia-framework';
 import { Connector } from './connector';
 
-@inject(Stomp)
 export class StompConnectorCreator {
-  constructor(stomp) {
-    this.stomp = stomp;
-  }
-
   static create(config) {
-    return new StompConnector(this.stomp, config);
+    return new StompConnector(Stomp, config);
   }
 }
 

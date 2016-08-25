@@ -3,7 +3,7 @@
 System.register(['stompjs', 'aurelia-framework', './connector'], function (_export, _context) {
   "use strict";
 
-  var Stomp, inject, Connector, _dec, _class, StompConnectorCreator, StompConnector;
+  var Stomp, inject, Connector, StompConnectorCreator, StompConnector;
 
   function _possibleConstructorReturn(self, call) {
     if (!self) {
@@ -44,19 +44,17 @@ System.register(['stompjs', 'aurelia-framework', './connector'], function (_expo
       Connector = _connector.Connector;
     }],
     execute: function () {
-      _export('StompConnectorCreator', StompConnectorCreator = (_dec = inject(Stomp), _dec(_class = function () {
-        function StompConnectorCreator(stomp) {
+      _export('StompConnectorCreator', StompConnectorCreator = function () {
+        function StompConnectorCreator() {
           _classCallCheck(this, StompConnectorCreator);
-
-          this.stomp = stomp;
         }
 
         StompConnectorCreator.create = function create(config) {
-          return new StompConnector(this.stomp, config);
+          return new StompConnector(Stomp, config);
         };
 
         return StompConnectorCreator;
-      }()) || _class));
+      }());
 
       _export('StompConnectorCreator', StompConnectorCreator);
 

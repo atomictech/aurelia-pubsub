@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.StompConnector = exports.StompConnectorCreator = undefined;
 
-var _dec, _class;
-
 var _stompjs = require('stompjs');
 
 var _aureliaFramework = require('aurelia-framework');
@@ -19,19 +17,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var StompConnectorCreator = exports.StompConnectorCreator = (_dec = (0, _aureliaFramework.inject)(_stompjs.Stomp), _dec(_class = function () {
-  function StompConnectorCreator(stomp) {
+var StompConnectorCreator = exports.StompConnectorCreator = function () {
+  function StompConnectorCreator() {
     _classCallCheck(this, StompConnectorCreator);
-
-    this.stomp = stomp;
   }
 
   StompConnectorCreator.create = function create(config) {
-    return new StompConnector(this.stomp, config);
+    return new StompConnector(_stompjs.Stomp, config);
   };
 
   return StompConnectorCreator;
-}()) || _class);
+}();
 
 var StompConnector = exports.StompConnector = function (_Connector) {
   _inherits(StompConnector, _Connector);
