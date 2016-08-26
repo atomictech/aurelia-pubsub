@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['stompjs', 'aurelia-framework', './connector'], function (_export, _context) {
+System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], function (_export, _context) {
   "use strict";
 
-  var Stomp, inject, Connector, StompConnectorCreator, StompConnector;
+  var _, Stomp, inject, Connector, StompConnectorCreator, StompConnector;
 
   function _possibleConstructorReturn(self, call) {
     if (!self) {
@@ -36,8 +36,10 @@ System.register(['stompjs', 'aurelia-framework', './connector'], function (_expo
   }
 
   return {
-    setters: [function (_stompjs) {
-      Stomp = _stompjs.Stomp;
+    setters: [function (_lodash) {
+      _ = _lodash.default;
+    }, function (_stompjs) {
+      Stomp = _stompjs;
     }, function (_aureliaFramework) {
       inject = _aureliaFramework.inject;
     }, function (_connector) {
@@ -81,7 +83,15 @@ System.register(['stompjs', 'aurelia-framework', './connector'], function (_expo
         }
 
         StompConnector.prototype.initialize = function initialize() {
-          this.client = new this.stomp.overWS(this.config.endpoint);
+          this.client = new this.stomp.client(this.config.endpoint);
+          if (!this.config.debug) {
+            this.client.debug = null;
+          }
+
+          if (_.has(this.config, 'heartbeat')) {
+            this.client.heartbeat.outgoing = _.isUndefined(this.config.heartbeat.outgoing) ? 0 : parseInt(this.config.heartbeat.outgoing, 10);
+            this.client.heartbeat.incoming = _.isUndefined(this.config.heartbeat.incoming) ? 10000 : parseInt(this.config.heartbeat.incoming, 10);
+          }
 
           if (this.config.autoConnect) {
             this.start();
@@ -91,13 +101,6 @@ System.register(['stompjs', 'aurelia-framework', './connector'], function (_expo
         StompConnector.prototype._connectionCallback = function _connectionCallback() {
           this.isConnected = true;
 
-          if (this.config.heartbeat.force) {
-            this._handleHeartbeat();
-          } else {
-            this.client.heartbeat.outgoing = this.config.heartbeat.outgoing;
-            this.client.heartbeat.incoming = this.config.heartbeat.incoming;
-          }
-
           if (this.waitingMessages.length) {
             this._publishWaitingMessages();
           }
@@ -106,13 +109,13 @@ System.register(['stompjs', 'aurelia-framework', './connector'], function (_expo
         StompConnector.prototype._disconnectionCallback = function _disconnectionCallback() {
           this.isConnected = false;
           this.waitingMessages = [];
-
-          if (this.config.heartbeat.force || this.localHeartbeat) {
-            this._stopHeartbeat();
-          }
         };
 
-        StompConnector.prototype._errorCallback = function _errorCallback() {};
+        StompConnector.prototype._errorCallback = function _errorCallback(err) {
+          if (this.config.reconnectOnError) {
+            this.initialize();
+          }
+        };
 
         StompConnector.prototype._messageCallback = function _messageCallback() {};
 
@@ -149,18 +152,6 @@ System.register(['stompjs', 'aurelia-framework', './connector'], function (_expo
           }
         };
 
-        StompConnector.prototype._handleHeartbeat = function _handleHeartbeat() {
-          var _this2 = this;
-
-          this.localHeartbeat = setInterval(function () {
-            _this2.publish(_this2.config.heartbeat.destination, {});
-          }, this.config.outgoing);
-        };
-
-        StompConnector.prototype._stopHeartbeat = function _stopHeartbeat() {
-          clearInterval(this.localHeartbeat);
-        };
-
         StompConnector.prototype._forgeDestination = function _forgeDestination(destination) {
           var toQueue = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
@@ -171,16 +162,17 @@ System.register(['stompjs', 'aurelia-framework', './connector'], function (_expo
           }
 
           output += destination;
+          return output;
         };
 
         StompConnector.prototype.start = function start() {
           this._clientCheck();
-          this.client.connect(this.config.login, this.config.password, this._connectionCallback, this._errorCallback, this.config.host);
+          this.client.connect(this.config.login, this.config.password, this._connectionCallback.bind(this), this._errorCallback.bind(this), this.config.host);
         };
 
         StompConnector.prototype.stop = function stop() {
           this.subscribeDestinations = [];
-          this.client.disconnect(this._disconnectionCallback);
+          this.client.disconnect(this._disconnectionCallback.bind(this));
         };
 
         StompConnector.prototype.publish = function publish(destination, message) {
@@ -195,7 +187,7 @@ System.register(['stompjs', 'aurelia-framework', './connector'], function (_expo
             this._bufferMessage(messageWrapper);
           } else {
             this._clientCheck();
-            this.client.send(this._forgeDestination(destination, toQueue), _.merge({}, this.config.messageHeader, messageHeader), message);
+            this.client.send(this._forgeDestination(destination, toQueue), _.merge({}, this.config.messageHeader, messageHeader), _.isString(message) ? message : JSON.stringify(message));
           }
         };
 

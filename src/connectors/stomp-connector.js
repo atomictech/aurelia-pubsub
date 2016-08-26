@@ -1,4 +1,6 @@
-import { Stomp } from 'stompjs';
+import _ from 'lodash';
+import * as Stomp from 'stompjs';
+
 import { inject } from 'aurelia-framework';
 import { Connector } from './connector';
 
@@ -24,7 +26,15 @@ export class StompConnector extends Connector {
   }
 
   initialize() {
-    this.client = new this.stomp.overWS(this.config.endpoint);
+    this.client = new this.stomp.client(this.config.endpoint);
+    if (!this.config.debug) {
+      this.client.debug = null;
+    }
+
+    if (_.has(this.config, 'heartbeat')) {
+      this.client.heartbeat.outgoing = _.isUndefined(this.config.heartbeat.outgoing) ? 0 : parseInt(this.config.heartbeat.outgoing, 10);
+      this.client.heartbeat.incoming = _.isUndefined(this.config.heartbeat.incoming) ? 10000 : parseInt(this.config.heartbeat.incoming, 10);
+    }
 
     if (this.config.autoConnect) {
       this.start();
@@ -34,12 +44,9 @@ export class StompConnector extends Connector {
   _connectionCallback() {
     this.isConnected = true;
 
-    if (this.config.heartbeat.force) {
-      this._handleHeartbeat();
-    } else {
-      this.client.heartbeat.outgoing = this.config.heartbeat.outgoing;
-      this.client.heartbeat.incoming = this.config.heartbeat.incoming;
-    }
+    // if (this.config.heartbeat.force) {
+    //   this._handleHeartbeat();
+    // }
 
     if (this.waitingMessages.length) {
       this._publishWaitingMessages();
@@ -50,13 +57,15 @@ export class StompConnector extends Connector {
     this.isConnected = false;
     this.waitingMessages = [];
 
-    if (this.config.heartbeat.force || this.localHeartbeat) {
-      this._stopHeartbeat();
-    }
+    // if (this.config.heartbeat.force || this.localHeartbeat) {
+    //   this._stopHeartbeat();
+    // }
   }
 
-  _errorCallback() {
-
+  _errorCallback(err) {
+    if (this.config.reconnectOnError) {
+      this.initialize();
+    }
   }
 
   _messageCallback() {
@@ -83,15 +92,17 @@ export class StompConnector extends Connector {
     }
   }
 
-  _handleHeartbeat() {
-    this.localHeartbeat = setInterval(() => {
-      this.publish(this.config.heartbeat.destination, {});
-    }, this.config.outgoing);
-  }
+  // _handleHeartbeat() {
+  //   if (_.has(this.config.heartbeat, 'outgoing')) {
+  //     this.localHeartbeat = setInterval(() => {
+  //       this.publish(this.config.heartbeat.destination, {});
+  //     }, this.config.heartbeat.outgoing);
+  //   }
+  // }
 
-  _stopHeartbeat() {
-    clearInterval(this.localHeartbeat);
-  }
+  // _stopHeartbeat() {
+  //   clearInterval(this.localHeartbeat);
+  // }
 
   _forgeDestination(destination, toQueue = false) {
     let output = toQueue ? '/queue/' : '/topic/';
@@ -101,16 +112,17 @@ export class StompConnector extends Connector {
     }
 
     output += destination;
+    return output;
   }
 
   start() {
     this._clientCheck();
-    this.client.connect(this.config.login, this.config.password, this._connectionCallback, this._errorCallback, this.config.host);
+    this.client.connect(this.config.login, this.config.password, this._connectionCallback.bind(this), this._errorCallback.bind(this), this.config.host);
   }
 
   stop() {
     this.subscribeDestinations = [];
-    this.client.disconnect(this._disconnectionCallback);
+    this.client.disconnect(this._disconnectionCallback.bind(this));
   }
 
   publish(destination, message, toQueue = false, messageHeader) {
@@ -124,7 +136,7 @@ export class StompConnector extends Connector {
       this._clientCheck();
       this.client.send(this._forgeDestination(destination, toQueue),
         _.merge({}, this.config.messageHeader, messageHeader),
-        message);
+        _.isString(message) ? message : JSON.stringify(message));
     }
   }
 

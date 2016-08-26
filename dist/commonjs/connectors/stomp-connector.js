@@ -5,11 +5,21 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.StompConnector = exports.StompConnectorCreator = undefined;
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _stompjs = require('stompjs');
+
+var Stomp = _interopRequireWildcard(_stompjs);
 
 var _aureliaFramework = require('aurelia-framework');
 
 var _connector = require('./connector');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
@@ -23,7 +33,7 @@ var StompConnectorCreator = exports.StompConnectorCreator = function () {
   }
 
   StompConnectorCreator.create = function create(config) {
-    return new StompConnector(_stompjs.Stomp, config);
+    return new StompConnector(Stomp, config);
   };
 
   return StompConnectorCreator;
@@ -52,7 +62,15 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   }
 
   StompConnector.prototype.initialize = function initialize() {
-    this.client = new this.stomp.overWS(this.config.endpoint);
+    this.client = new this.stomp.client(this.config.endpoint);
+    if (!this.config.debug) {
+      this.client.debug = null;
+    }
+
+    if (_lodash2.default.has(this.config, 'heartbeat')) {
+      this.client.heartbeat.outgoing = _lodash2.default.isUndefined(this.config.heartbeat.outgoing) ? 0 : parseInt(this.config.heartbeat.outgoing, 10);
+      this.client.heartbeat.incoming = _lodash2.default.isUndefined(this.config.heartbeat.incoming) ? 10000 : parseInt(this.config.heartbeat.incoming, 10);
+    }
 
     if (this.config.autoConnect) {
       this.start();
@@ -62,13 +80,6 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   StompConnector.prototype._connectionCallback = function _connectionCallback() {
     this.isConnected = true;
 
-    if (this.config.heartbeat.force) {
-      this._handleHeartbeat();
-    } else {
-      this.client.heartbeat.outgoing = this.config.heartbeat.outgoing;
-      this.client.heartbeat.incoming = this.config.heartbeat.incoming;
-    }
-
     if (this.waitingMessages.length) {
       this._publishWaitingMessages();
     }
@@ -77,13 +88,13 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   StompConnector.prototype._disconnectionCallback = function _disconnectionCallback() {
     this.isConnected = false;
     this.waitingMessages = [];
-
-    if (this.config.heartbeat.force || this.localHeartbeat) {
-      this._stopHeartbeat();
-    }
   };
 
-  StompConnector.prototype._errorCallback = function _errorCallback() {};
+  StompConnector.prototype._errorCallback = function _errorCallback(err) {
+    if (this.config.reconnectOnError) {
+      this.initialize();
+    }
+  };
 
   StompConnector.prototype._messageCallback = function _messageCallback() {};
 
@@ -120,18 +131,6 @@ var StompConnector = exports.StompConnector = function (_Connector) {
     }
   };
 
-  StompConnector.prototype._handleHeartbeat = function _handleHeartbeat() {
-    var _this2 = this;
-
-    this.localHeartbeat = setInterval(function () {
-      _this2.publish(_this2.config.heartbeat.destination, {});
-    }, this.config.outgoing);
-  };
-
-  StompConnector.prototype._stopHeartbeat = function _stopHeartbeat() {
-    clearInterval(this.localHeartbeat);
-  };
-
   StompConnector.prototype._forgeDestination = function _forgeDestination(destination) {
     var toQueue = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
@@ -142,16 +141,17 @@ var StompConnector = exports.StompConnector = function (_Connector) {
     }
 
     output += destination;
+    return output;
   };
 
   StompConnector.prototype.start = function start() {
     this._clientCheck();
-    this.client.connect(this.config.login, this.config.password, this._connectionCallback, this._errorCallback, this.config.host);
+    this.client.connect(this.config.login, this.config.password, this._connectionCallback.bind(this), this._errorCallback.bind(this), this.config.host);
   };
 
   StompConnector.prototype.stop = function stop() {
     this.subscribeDestinations = [];
-    this.client.disconnect(this._disconnectionCallback);
+    this.client.disconnect(this._disconnectionCallback.bind(this));
   };
 
   StompConnector.prototype.publish = function publish(destination, message) {
@@ -166,7 +166,7 @@ var StompConnector = exports.StompConnector = function (_Connector) {
       this._bufferMessage(messageWrapper);
     } else {
       this._clientCheck();
-      this.client.send(this._forgeDestination(destination, toQueue), _.merge({}, this.config.messageHeader, messageHeader), message);
+      this.client.send(this._forgeDestination(destination, toQueue), _lodash2.default.merge({}, this.config.messageHeader, messageHeader), _lodash2.default.isString(message) ? message : JSON.stringify(message));
     }
   };
 
