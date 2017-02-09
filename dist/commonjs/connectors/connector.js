@@ -20,14 +20,14 @@ var Connector = exports.Connector = function () {
   };
 
   Connector.prototype.publish = function publish(destination, message) {
-    var toQueue = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     var messageHeader = arguments[3];
 
     throw new Error('Cannot use abstract Connector.');
   };
 
   Connector.prototype.subscribe = function subscribe(destination, callback) {
-    var toQueue = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
     throw new Error('Cannot use abstract Connector.');
   };

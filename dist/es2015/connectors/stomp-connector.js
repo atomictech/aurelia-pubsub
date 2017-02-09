@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import * as Stomp from 'stompjs';
+import { Stomp } from 'stompjs';
 
 import { inject } from 'aurelia-framework';
 import { Connector } from './connector';

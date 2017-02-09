@@ -11,13 +11,9 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _stompjs = require('stompjs');
 
-var Stomp = _interopRequireWildcard(_stompjs);
-
 var _aureliaFramework = require('aurelia-framework');
 
 var _connector = require('./connector');
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,7 +29,7 @@ var StompConnectorCreator = exports.StompConnectorCreator = function () {
   }
 
   StompConnectorCreator.create = function create(config) {
-    return new StompConnector(Stomp, config);
+    return new StompConnector(_stompjs.Stomp, config);
   };
 
   return StompConnectorCreator;
@@ -43,7 +39,7 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   _inherits(StompConnector, _Connector);
 
   function StompConnector(stomp) {
-    var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     _classCallCheck(this, StompConnector);
 
@@ -132,7 +128,7 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   };
 
   StompConnector.prototype._forgeDestination = function _forgeDestination(destination) {
-    var toQueue = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+    var toQueue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
     var output = toQueue ? '/queue/' : '/topic/';
 
@@ -155,7 +151,7 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   };
 
   StompConnector.prototype.publish = function publish(destination, message) {
-    var toQueue = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     var messageHeader = arguments[3];
 
     if (!this.isConnected) {
@@ -171,7 +167,7 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   };
 
   StompConnector.prototype.subscribe = function subscribe(destination, callback) {
-    var toQueue = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
     this.subscribeDestinations[destination] = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
   };

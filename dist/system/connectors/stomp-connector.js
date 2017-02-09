@@ -39,7 +39,7 @@ System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], funct
     setters: [function (_lodash) {
       _ = _lodash.default;
     }, function (_stompjs) {
-      Stomp = _stompjs;
+      Stomp = _stompjs.Stomp;
     }, function (_aureliaFramework) {
       inject = _aureliaFramework.inject;
     }, function (_connector) {
@@ -64,7 +64,7 @@ System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], funct
         _inherits(StompConnector, _Connector);
 
         function StompConnector(stomp) {
-          var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+          var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
           _classCallCheck(this, StompConnector);
 
@@ -153,7 +153,7 @@ System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], funct
         };
 
         StompConnector.prototype._forgeDestination = function _forgeDestination(destination) {
-          var toQueue = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+          var toQueue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
           var output = toQueue ? '/queue/' : '/topic/';
 
@@ -176,7 +176,7 @@ System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], funct
         };
 
         StompConnector.prototype.publish = function publish(destination, message) {
-          var toQueue = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+          var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
           var messageHeader = arguments[3];
 
           if (!this.isConnected) {
@@ -192,7 +192,7 @@ System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], funct
         };
 
         StompConnector.prototype.subscribe = function subscribe(destination, callback) {
-          var toQueue = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+          var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
           this.subscribeDestinations[destination] = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
         };
