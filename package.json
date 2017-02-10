@@ -7,16 +7,16 @@
     "plugin",
     "pubsub"
   ],
-  "homepage": "https://github.com/typedef42/aurelia-pubsub",
+  "homepage": "https://github.com/atomictech/aurelia-pubsub",
   "bugs": {
-    "url": "https://github.com/typedef42/aurelia-pubsub/issues"
+    "url": "https://github.com/atomictech/aurelia-pubsub/issues"
   },
   "license": "MIT",
   "author": "Yannis Torres <yann.torres@gmail.com>",
   "main": "dist/commonjs/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/typedef42/aurelia-pubsub"
+    "url": "https://github.com/atomictech/aurelia-pubsub"
   },
   "devDependencies": {
     "aurelia-tools": "^0.2.4",
