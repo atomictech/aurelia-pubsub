@@ -1,4 +1,4 @@
-define(['exports', 'lodash', 'stompjs', 'aurelia-framework', './connector'], function (exports, _lodash, _stompjs, _aureliaFramework, _connector) {
+define(['exports', 'lodash', 'stompjs', './connector'], function (exports, _lodash, _stompjs, _connector) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -137,7 +137,7 @@ define(['exports', 'lodash', 'stompjs', 'aurelia-framework', './connector'], fun
     StompConnector.prototype._bufferMessage = function _bufferMessage(wrapper) {
       if (this.config.maxWaitingMessages && this.waitingMessages.length > this.config.maxWaitingMessages) {
         this.waitingMessages.shift();
-        console.log("warning, StompConnector dropped waiting message, waiting buffer is full!");
+        console.log('warning, StompConnector dropped waiting message, waiting buffer is full!');
       }
       this.waitingMessages.push(wrapper);
     };
@@ -167,7 +167,7 @@ define(['exports', 'lodash', 'stompjs', 'aurelia-framework', './connector'], fun
     };
 
     StompConnector.prototype.stop = function stop() {
-      this.subscribeDestinations = [];
+      this.subscribeDestinations = {};
       this.client.disconnect(this._disconnectionCallback.bind(this));
     };
 

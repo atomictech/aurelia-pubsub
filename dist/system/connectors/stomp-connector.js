@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], function (_export, _context) {
+System.register(['lodash', 'stompjs', './connector'], function (_export, _context) {
   "use strict";
 
-  var _, Stomp, inject, Connector, StompConnectorCreator, StompConnector;
+  var _, Stomp, Connector, StompConnectorCreator, StompConnector;
 
   function _possibleConstructorReturn(self, call) {
     if (!self) {
@@ -40,8 +40,6 @@ System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], funct
       _ = _lodash.default;
     }, function (_stompjs) {
       Stomp = _stompjs.Stomp;
-    }, function (_aureliaFramework) {
-      inject = _aureliaFramework.inject;
     }, function (_connector) {
       Connector = _connector.Connector;
     }],
@@ -141,7 +139,7 @@ System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], funct
         StompConnector.prototype._bufferMessage = function _bufferMessage(wrapper) {
           if (this.config.maxWaitingMessages && this.waitingMessages.length > this.config.maxWaitingMessages) {
             this.waitingMessages.shift();
-            console.log("warning, StompConnector dropped waiting message, waiting buffer is full!");
+            console.log('warning, StompConnector dropped waiting message, waiting buffer is full!');
           }
           this.waitingMessages.push(wrapper);
         };
@@ -171,7 +169,7 @@ System.register(['lodash', 'stompjs', 'aurelia-framework', './connector'], funct
         };
 
         StompConnector.prototype.stop = function stop() {
-          this.subscribeDestinations = [];
+          this.subscribeDestinations = {};
           this.client.disconnect(this._disconnectionCallback.bind(this));
         };
 

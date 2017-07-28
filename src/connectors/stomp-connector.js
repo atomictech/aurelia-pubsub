@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { Stomp } from 'stompjs';
 
-import { inject } from 'aurelia-framework';
 import { Connector } from './connector';
 
 export class StompConnectorCreator {
@@ -81,7 +80,7 @@ export class StompConnector extends Connector {
   _bufferMessage(wrapper) {
     if (this.config.maxWaitingMessages && this.waitingMessages.length > this.config.maxWaitingMessages) {
       this.waitingMessages.shift();
-      console.log("warning, StompConnector dropped waiting message, waiting buffer is full!");
+      console.log('warning, StompConnector dropped waiting message, waiting buffer is full!');
     }
     this.waitingMessages.push(wrapper);
   }
@@ -121,7 +120,7 @@ export class StompConnector extends Connector {
   }
 
   stop() {
-    this.subscribeDestinations = [];
+    this.subscribeDestinations = {};
     this.client.disconnect(this._disconnectionCallback.bind(this));
   }
 

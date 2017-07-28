@@ -11,8 +11,6 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _stompjs = require('stompjs');
 
-var _aureliaFramework = require('aurelia-framework');
-
 var _connector = require('./connector');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -116,7 +114,7 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   StompConnector.prototype._bufferMessage = function _bufferMessage(wrapper) {
     if (this.config.maxWaitingMessages && this.waitingMessages.length > this.config.maxWaitingMessages) {
       this.waitingMessages.shift();
-      console.log("warning, StompConnector dropped waiting message, waiting buffer is full!");
+      console.log('warning, StompConnector dropped waiting message, waiting buffer is full!');
     }
     this.waitingMessages.push(wrapper);
   };
@@ -146,7 +144,7 @@ var StompConnector = exports.StompConnector = function (_Connector) {
   };
 
   StompConnector.prototype.stop = function stop() {
-    this.subscribeDestinations = [];
+    this.subscribeDestinations = {};
     this.client.disconnect(this._disconnectionCallback.bind(this));
   };
 
