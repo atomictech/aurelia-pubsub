@@ -139,7 +139,7 @@ define(['exports', 'socket.io-client', './connector'], function (exports, _socke
         this._bufferMessage(messageWrapper);
       } else {
         this._clientCheck();
-        this.client.send(destination, message, this._messageCallback.bind(this));
+        this.client.emit(destination, message, this._messageCallback.bind(this));
       }
     };
 
