@@ -1,6 +1,6 @@
 var _dec, _class;
 
-import { Container, resolver } from 'aurelia-dependency-injection';
+import { resolver } from 'aurelia-dependency-injection';
 import { Config } from './config';
 
 export let Messenger = (_dec = resolver(), _dec(_class = class Messenger {
@@ -16,5 +16,4 @@ export let Messenger = (_dec = resolver(), _dec(_class = class Messenger {
   static of(key) {
     return new Messenger(key);
   }
-
 }) || _class);

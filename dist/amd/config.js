@@ -1,10 +1,9 @@
-define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
-  'use strict';
+define(["exports"], function (exports) {
+  "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.Config = undefined;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {

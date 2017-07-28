@@ -1,5 +1,3 @@
-import { inject } from 'aurelia-framework';
-
 /**
  * Config class. Configures and stores connectors services
  */

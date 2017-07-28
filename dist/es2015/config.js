@@ -1,4 +1,3 @@
-import { inject } from 'aurelia-framework';
 
 export let Config = class Config {
 
