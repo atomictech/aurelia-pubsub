@@ -13,7 +13,7 @@ module.exports = function(config) {
 
     jspm: {
       // Edit this to your needs
-      loadFiles: ['test/setup.js', 'test/unit/**/*.js'],
+      loadFiles: ['jspm_packages/system-polyfills.js', 'test/setup.js', 'test/unit/**/*.js'],
       serveFiles: ['src/**/*.js'],
       paths: {
         '*': '*',
@@ -23,7 +23,7 @@ module.exports = function(config) {
     },
 
     // list of files / patterns to load in the browser
-    files: [],
+    files: ['src/**/*.js'],
 
     // list of files to exclude
     exclude: [],
@@ -38,11 +38,11 @@ module.exports = function(config) {
     'babelPreprocessor': {
       options: {
         sourceMap: 'inline',
-        presets: [ 'es2015-loose', 'stage-1'],
+        presets: [['@babel/env', { targets: { browsers: ['last 2 versions'] } }], '@babel/stage-1'],
         plugins: [
-          'syntax-flow',
-          'transform-decorators-legacy',
-          'transform-flow-strip-types'
+          '@babel/syntax-flow',
+          '@babel/proposal-decorators',
+          '@babel/transform-flow-strip-types'
         ]
       }
     },
@@ -67,7 +67,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

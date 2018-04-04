@@ -10,6 +10,7 @@ System.config({
     "aurelia-dependency-injection": "npm:aurelia-dependency-injection@1.0.0",
     "aurelia-fetch-client": "npm:aurelia-fetch-client@1.0.0",
     "aurelia-framework": "npm:aurelia-framework@1.0.1",
+    "aurelia-pal-browser": "npm:aurelia-pal-browser@1.7.0",
     "aurelia-polyfills": "npm:aurelia-polyfills@1.0.0",
     "fetch": "github:github/fetch@1.0.0",
     "lodash": "npm:lodash@4.15.0",
@@ -92,12 +93,12 @@ System.config({
     "npm:aurelia-binding@1.0.1": {
       "aurelia-logging": "npm:aurelia-logging@1.0.0",
       "aurelia-metadata": "npm:aurelia-metadata@1.0.0",
-      "aurelia-pal": "npm:aurelia-pal@1.0.0",
+      "aurelia-pal": "npm:aurelia-pal@1.7.0",
       "aurelia-task-queue": "npm:aurelia-task-queue@1.0.0"
     },
     "npm:aurelia-dependency-injection@1.0.0": {
       "aurelia-metadata": "npm:aurelia-metadata@1.0.0",
-      "aurelia-pal": "npm:aurelia-pal@1.0.0"
+      "aurelia-pal": "npm:aurelia-pal@1.7.0"
     },
     "npm:aurelia-framework@1.0.1": {
       "aurelia-binding": "npm:aurelia-binding@1.0.1",
@@ -105,7 +106,7 @@ System.config({
       "aurelia-loader": "npm:aurelia-loader@1.0.0",
       "aurelia-logging": "npm:aurelia-logging@1.0.0",
       "aurelia-metadata": "npm:aurelia-metadata@1.0.0",
-      "aurelia-pal": "npm:aurelia-pal@1.0.0",
+      "aurelia-pal": "npm:aurelia-pal@1.7.0",
       "aurelia-path": "npm:aurelia-path@1.0.0",
       "aurelia-task-queue": "npm:aurelia-task-queue@1.0.0",
       "aurelia-templating": "npm:aurelia-templating@1.0.0"
@@ -115,13 +116,16 @@ System.config({
       "aurelia-path": "npm:aurelia-path@1.0.0"
     },
     "npm:aurelia-metadata@1.0.0": {
-      "aurelia-pal": "npm:aurelia-pal@1.0.0"
+      "aurelia-pal": "npm:aurelia-pal@1.7.0"
+    },
+    "npm:aurelia-pal-browser@1.7.0": {
+      "aurelia-pal": "npm:aurelia-pal@1.7.0"
     },
     "npm:aurelia-polyfills@1.0.0": {
-      "aurelia-pal": "npm:aurelia-pal@1.0.0"
+      "aurelia-pal": "npm:aurelia-pal@1.7.0"
     },
     "npm:aurelia-task-queue@1.0.0": {
-      "aurelia-pal": "npm:aurelia-pal@1.0.0"
+      "aurelia-pal": "npm:aurelia-pal@1.7.0"
     },
     "npm:aurelia-templating@1.0.0": {
       "aurelia-binding": "npm:aurelia-binding@1.0.1",
@@ -129,7 +133,7 @@ System.config({
       "aurelia-loader": "npm:aurelia-loader@1.0.0",
       "aurelia-logging": "npm:aurelia-logging@1.0.0",
       "aurelia-metadata": "npm:aurelia-metadata@1.0.0",
-      "aurelia-pal": "npm:aurelia-pal@1.0.0",
+      "aurelia-pal": "npm:aurelia-pal@1.7.0",
       "aurelia-path": "npm:aurelia-path@1.0.0",
       "aurelia-task-queue": "npm:aurelia-task-queue@1.0.0"
     },

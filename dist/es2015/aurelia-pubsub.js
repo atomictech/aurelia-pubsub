@@ -1,13 +1,41 @@
-import { Messenger } from './messenger';
-import { Connector } from './connectors/connector';
-import { Config } from './config';
+"use strict";
 
-export function configure(aurelia, configCallback) {
-  let config = aurelia.container.get(Config);
-
-  if (configCallback !== undefined && typeof configCallback === 'function') {
-    configCallback(config);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.configure = configure;
+Object.defineProperty(exports, "Messenger", {
+  enumerable: true,
+  get: function get() {
+    return _messenger.Messenger;
   }
-}
+});
+Object.defineProperty(exports, "Connector", {
+  enumerable: true,
+  get: function get() {
+    return _connector.Connector;
+  }
+});
+Object.defineProperty(exports, "Config", {
+  enumerable: true,
+  get: function get() {
+    return _config.Config;
+  }
+});
 
-export { Messenger, Connector, Config };
+var _messenger = require("./messenger");
+
+var _connector = require("./connectors/connector");
+
+var _config = require("./config");
+
+function configure(aurelia, configCallback) {
+  var config = aurelia.container.get(_config.Config);
+
+  if (configCallback === undefined || typeof configCallback !== 'function') {
+    var error = 'You need to provide a callback method to properly configure the library';
+    throw error;
+  }
+
+  configCallback(config);
+}

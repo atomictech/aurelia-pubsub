@@ -1,4 +1,5 @@
-import {configure} from '../../src/aurelia-pubsub';
+import { Aurelia } from 'aurelia-framework';
+import { configure } from '../../src/aurelia-pubsub';
 
 class ConfigStub {
   globalResources(...resources) {
@@ -7,15 +8,14 @@ class ConfigStub {
 }
 
 describe('the Aurelia configuration', () => {
-  var mockedConfiguration;
+  let mockedConfiguration;
 
   beforeEach(() => {
     mockedConfiguration = new ConfigStub();
-    configure(mockedConfiguration);
+    configure(Aurelia, () => mockedConfiguration);
   });
 
   it('should register a global resource', () => {
     expect(mockedConfiguration.resources).toContain('./config');
   });
-
 });

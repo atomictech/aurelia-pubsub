@@ -1,39 +1,23 @@
-'use strict';
+"use strict";
 
-System.register(['socket.io-client', './connector'], function (_export, _context) {
+System.register(["socket.io-client", "./connector"], function (_export, _context) {
   "use strict";
 
   var socketio, Connector, SocketIOConnectorCreator, SocketIOConnector;
 
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
+  function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
+  function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
+  function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
+  function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+  function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+  function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
   return {
     setters: [function (_socketIoClient) {
@@ -42,121 +26,142 @@ System.register(['socket.io-client', './connector'], function (_export, _context
       Connector = _connector.Connector;
     }],
     execute: function () {
-      _export('SocketIOConnectorCreator', SocketIOConnectorCreator = function () {
+      _export("SocketIOConnectorCreator", SocketIOConnectorCreator = function () {
         function SocketIOConnectorCreator() {
           _classCallCheck(this, SocketIOConnectorCreator);
         }
 
-        SocketIOConnectorCreator.create = function create(config) {
-          return new SocketIOConnector(socketio, config);
-        };
+        _createClass(SocketIOConnectorCreator, null, [{
+          key: "create",
+          value: function create(config) {
+            return new SocketIOConnector(socketio, config);
+          }
+        }]);
 
         return SocketIOConnectorCreator;
       }());
 
-      _export('SocketIOConnectorCreator', SocketIOConnectorCreator);
+      _export("SocketIOConnectorCreator", SocketIOConnectorCreator);
 
-      _export('SocketIOConnector', SocketIOConnector = function (_Connector) {
+      _export("SocketIOConnector", SocketIOConnector = function (_Connector) {
         _inherits(SocketIOConnector, _Connector);
 
         function SocketIOConnector(io) {
+          var _this;
+
           var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
           _classCallCheck(this, SocketIOConnector);
 
-          var _this = _possibleConstructorReturn(this, _Connector.call(this));
-
+          _this = _possibleConstructorReturn(this, (SocketIOConnector.__proto__ || Object.getPrototypeOf(SocketIOConnector)).call(this));
           _this.io = io;
           _this.config = config;
-
           _this.waitingMessages = [];
           _this.isConnected = false;
           _this.subscribeDestinations = {};
 
           _this.initialize();
+
           return _this;
         }
 
-        SocketIOConnector.prototype.initialize = function initialize() {
-          this.client = new this.io(this.config.url, this.config.io);
-
-          this.client.on('connect', this._connectionCallback.bind(this));
-          this.client.on('disconnect', this._disconnectionCallback.bind(this));
-        };
-
-        SocketIOConnector.prototype._connectionCallback = function _connectionCallback() {
-          this.isConnected = true;
-
-          if (this.waitingMessages.length) {
-            this._publishWaitingMessages();
+        _createClass(SocketIOConnector, [{
+          key: "initialize",
+          value: function initialize() {
+            this.client = new this.io(this.config.url, this.config.io);
+            this.client.on('connect', this._connectionCallback.bind(this));
+            this.client.on('disconnect', this._disconnectionCallback.bind(this));
           }
-        };
+        }, {
+          key: "_connectionCallback",
+          value: function _connectionCallback() {
+            this.isConnected = true;
 
-        SocketIOConnector.prototype._disconnectionCallback = function _disconnectionCallback() {
-          this.isConnected = false;
-          this.waitingMessages = [];
-        };
-
-        SocketIOConnector.prototype._messageCallback = function _messageCallback() {};
-
-        SocketIOConnector.prototype._publishWaitingMessages = function _publishWaitingMessages() {
-          var _this2 = this;
-
-          this.waitingMessages.forEach(function (wrapper) {
-            _this2.publish(wrapper.destination, wrapper.message);
-          });
-        };
-
-        SocketIOConnector.prototype._bufferMessage = function _bufferMessage(wrapper) {
-          if (this.config.maxWaitingMessages && this.waitingMessages.length > this.config.maxWaitingMessages) {
-            this.waitingMessages.shift();
-            console.log('warning, IOConnector dropped waiting message, waiting buffer is full!');
+            if (this.waitingMessages.length) {
+              this._publishWaitingMessages();
+            }
           }
-          this.waitingMessages.push(wrapper);
-        };
-
-        SocketIOConnector.prototype._clientCheck = function _clientCheck() {
-          if (!this.client) {
-            throw new Error('Cannot start io connector, no io client has been found.');
+        }, {
+          key: "_disconnectionCallback",
+          value: function _disconnectionCallback() {
+            this.isConnected = false;
+            this.waitingMessages = [];
           }
-        };
+        }, {
+          key: "_messageCallback",
+          value: function _messageCallback() {}
+        }, {
+          key: "_publishWaitingMessages",
+          value: function _publishWaitingMessages() {
+            var _this2 = this;
 
-        SocketIOConnector.prototype.start = function start() {
-          this._clientCheck();
-          this.client.open();
-        };
+            this.waitingMessages.forEach(function (wrapper) {
+              _this2.publish(wrapper.destination, wrapper.message);
+            });
+          }
+        }, {
+          key: "_bufferMessage",
+          value: function _bufferMessage(wrapper) {
+            if (this.config.maxWaitingMessages && this.waitingMessages.length > this.config.maxWaitingMessages) {
+              this.waitingMessages.shift();
+              console.log('warning, IOConnector dropped waiting message, waiting buffer is full!');
+            }
 
-        SocketIOConnector.prototype.stop = function stop() {
-          this.client.close();
-        };
-
-        SocketIOConnector.prototype.publish = function publish(destination, message) {
-          if (!this.isConnected) {
-            var messageWrapper = {
-              destination: destination,
-              message: message
-            };
-            this._bufferMessage(messageWrapper);
-          } else {
+            this.waitingMessages.push(wrapper);
+          }
+        }, {
+          key: "_clientCheck",
+          value: function _clientCheck() {
+            if (!this.client) {
+              throw new Error('Cannot start io connector, no io client has been found.');
+            }
+          }
+        }, {
+          key: "start",
+          value: function start() {
             this._clientCheck();
-            this.client.emit(destination, message, this._messageCallback.bind(this));
+
+            this.client.open();
           }
-        };
+        }, {
+          key: "stop",
+          value: function stop() {
+            this.client.close();
+          }
+        }, {
+          key: "publish",
+          value: function publish(destination, message) {
+            if (!this.isConnected) {
+              var messageWrapper = {
+                destination: destination,
+                message: message
+              };
 
-        SocketIOConnector.prototype.subscribe = function subscribe(destination, callback) {
-          this.subscribeDestinations[destination] = callback;
-          this.client.on(destination, callback);
-        };
+              this._bufferMessage(messageWrapper);
+            } else {
+              this._clientCheck();
 
-        SocketIOConnector.prototype.unsubscribe = function unsubscribe(destination) {
-          delete this.subscribeDestinations[destination];
-          this.client.off(destination);
-        };
+              this.client.emit(destination, message, this._messageCallback.bind(this));
+            }
+          }
+        }, {
+          key: "subscribe",
+          value: function subscribe(destination, callback) {
+            this.subscribeDestinations[destination] = callback;
+            this.client.on(destination, callback);
+          }
+        }, {
+          key: "unsubscribe",
+          value: function unsubscribe(destination) {
+            delete this.subscribeDestinations[destination];
+            this.client.off(destination);
+          }
+        }]);
 
         return SocketIOConnector;
       }(Connector));
 
-      _export('SocketIOConnector', SocketIOConnector);
+      _export("SocketIOConnector", SocketIOConnector);
     }
   };
 });

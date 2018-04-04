@@ -3,7 +3,6 @@ import { Config } from './config';
 
 @resolver()
 export class Messenger {
-
   constructor(key) {
     this._key = key;
   }

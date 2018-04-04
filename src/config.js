@@ -2,14 +2,12 @@
  * Config class. Configures and stores connectors services
  */
 export class Config {
-
   constructor() {}
 
   connectors = {};
   defaultConnector = null;
 
   registerConnector(key, ConnectorCreator, config) {
-
     this.connectors[key] = ConnectorCreator.create(config);
 
     if (!this.defaultConnector && this.connectors[key]) {
