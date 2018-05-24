@@ -58,6 +58,7 @@
     "karma-jspm": "^2.2.1",
     "lodash": "^4.15.0",
     "object.assign": "^4.0.4",
+    "reconnecting-websocket": "^4.0.0-rc3",
     "require-dir": "^1.0.0",
     "run-sequence": "^2.1.0",
     "socket.io-client": "^2.0.3",
@@ -68,6 +69,7 @@
   },
   "peerDependencies": {
     "lodash": "^4.15.0",
+    "reconnecting-websocket": "^4.0.0-rc3",
     "socket.io-client": "^2.0.3",
     "stompjs": "^2.3.3"
   },

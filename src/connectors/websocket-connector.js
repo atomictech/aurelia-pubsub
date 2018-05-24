@@ -1,31 +1,33 @@
-import socketio from 'socket.io-client';
+import _ from 'lodash';
+import ReconnectingWebSocket from 'reconnecting-websocket';
+
 import { Connector } from './connector';
 
-export class SocketIOConnectorCreator {
+export class WebsocketConnectorCreator {
   static create(config) {
-    return new SocketIOConnector(socketio, config);
+    return new WebsocketConnector(ReconnectingWebSocket, config);
   }
 }
 
-export class SocketIOConnector extends Connector {
-  constructor(io, config = {}) {
+export class WebsocketConnector extends Connector {
+  waitingMessages = [];
+  isConnected = false;
+
+  constructor(rws, config = {}) {
     super();
 
-    this.io = io;
+    this.rws = rws;
     this.config = config;
-
-    this.waitingMessages = [];
-    this.isConnected = false;
-    this.subscribeDestinations = {};
 
     this.initialize();
   }
 
   initialize() {
-    this.client = new this.io(this.config.url, this.config.io); // eslint-disable-line new-cap
+    this.client = new this.rws(this.config.endpoint);  // eslint-disable-line new-cap
 
-    this.client.on('connect', this._connectionCallback.bind(this));
-    this.client.on('disconnect', this._disconnectionCallback.bind(this));
+    this.client.addEventListener('open', this._connectionCallback.bind(this));
+    this.client.addEventListener('close', this._disconnectionCallback.bind(this));
+    this.client.addEventListener('message', this._messageCallback.bind(this));
   }
 
   _connectionCallback() {
@@ -54,20 +56,15 @@ export class SocketIOConnector extends Connector {
   _bufferMessage(wrapper) {
     if (this.config.maxWaitingMessages && this.waitingMessages.length > this.config.maxWaitingMessages) {
       this.waitingMessages.shift();
-      console.log('warning, IOConnector dropped waiting message, waiting buffer is full!');
+      console.log('warning, WSConnector dropped waiting message, waiting buffer is full!');
     }
     this.waitingMessages.push(wrapper);
   }
 
   _clientCheck() {
     if (!this.client) {
-      throw new Error('Cannot start io connector, no io client has been found.');
+      throw new Error('Cannot start ws connector, no ws client has been found.');
     }
-  }
-
-  start() {
-    this._clientCheck();
-    this.client.open();
   }
 
   stop() {
@@ -83,17 +80,7 @@ export class SocketIOConnector extends Connector {
       this._bufferMessage(messageWrapper);
     } else {
       this._clientCheck();
-      this.client.emit(destination, message, this._messageCallback.bind(this));
+      this.client.send(_.isString(message) ? message : JSON.stringify(message));
     }
-  }
-
-  subscribe(destination, callback) {
-    this.subscribeDestinations[destination] = callback;
-    this.client.on(destination, callback);
-  }
-
-  unsubscribe(destination) {
-    delete this.subscribeDestinations[destination];
-    this.client.off(destination);
   }
 }

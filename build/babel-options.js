@@ -11,10 +11,10 @@ function base() {
     comments: false,
     compact: false,
     code: true,
-    presets: [['@babel/env', { targets: { browsers: ['last 2 versions'] } }], '@babel/stage-1'],
+    presets: [['@babel/env', { targets: { browsers: ['last 2 versions'] } }], ['@babel/preset-stage-1', { 'decoratorsLegacy': true }]],
     plugins: [
       '@babel/syntax-flow',
-      '@babel/proposal-decorators',
+      ['@babel/proposal-decorators', { 'legacy': true }],
       '@babel/transform-flow-strip-types'
     ]
   };
@@ -40,7 +40,6 @@ function system() {
 
 function es2015() {
   const options = base();
-  options.presets = ['@babel/stage-1'];
   return options;
 }
 

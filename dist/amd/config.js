@@ -12,22 +12,15 @@ define(["exports"], function (_exports) {
 
   function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
   var Config = function () {
     function Config() {
       _classCallCheck(this, Config);
 
-      Object.defineProperty(this, "connectors", {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: {}
-      });
-      Object.defineProperty(this, "defaultConnector", {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: null
-      });
+      _defineProperty(this, "connectors", {});
+
+      _defineProperty(this, "defaultConnector", null);
     }
 
     _createClass(Config, [{

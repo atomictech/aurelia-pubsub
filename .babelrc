@@ -11,7 +11,12 @@
   ],
   "plugins": [
     "@babel/syntax-flow",
-    "@babel/proposal-decorators",
+    [
+      "@babel/proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
     "@babel/transform-flow-strip-types"
   ],
   "env": {
