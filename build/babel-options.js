@@ -1,7 +1,10 @@
 import path from 'path';
+import _ from 'lodash';
+
+import babelOpts from '../.babelrc';
 
 function base() {
-  return {
+  return Object.assign({}, _.cloneDeep(babelOpts), {
     filename: '',
     filenameRelative: '',
     sourceMap: true,
@@ -10,14 +13,8 @@ function base() {
     moduleIds: false,
     comments: false,
     compact: false,
-    code: true,
-    presets: [['@babel/env', { targets: { browsers: ['last 2 versions'] } }], ['@babel/preset-stage-1', { 'decoratorsLegacy': true }]],
-    plugins: [
-      '@babel/syntax-flow',
-      ['@babel/proposal-decorators', { 'legacy': true }],
-      '@babel/transform-flow-strip-types'
-    ]
-  };
+    code: true
+  });
 }
 
 function commonjs() {
@@ -40,6 +37,7 @@ function system() {
 
 function es2015() {
   const options = base();
+  options.presets = [['@babel/preset-env', { targets: { esmodules: true } }]];
   return options;
 }
 

@@ -60,8 +60,6 @@ System.register([], function (_export, _context) {
 
         return Config;
       }());
-
-      _export("Config", Config);
     }
   };
 });

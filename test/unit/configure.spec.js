@@ -1,21 +1,43 @@
-import { Aurelia } from 'aurelia-framework';
 import { configure } from '../../src/aurelia-pubsub';
 
-class ConfigStub {
-  globalResources(...resources) {
-    this.resources = resources;
-  }
-}
-
-describe('the Aurelia configuration', () => {
-  let mockedConfiguration;
+describe('testing aurelia configure routine', () => {
+  let frameworkConfig;
 
   beforeEach(() => {
-    mockedConfiguration = new ConfigStub();
-    configure(Aurelia, () => mockedConfiguration);
+    frameworkConfig = {
+      globalResources: () => {
+
+      },
+      container: {
+        registerInstance: (type, instance) => {
+
+        },
+        get: (type) => {
+          return new type();
+        }
+      }
+    };
   });
 
-  it('should register a global resource', () => {
-    expect(mockedConfiguration.resources).toContain('./config');
+  it('should export configure function', () => {
+    expect(typeof configure).toBe('function');
+  });
+
+  it('should accept a setup callback passing back the instance', done => {
+    let foo = {
+      bar: instance => {
+        expect(typeof instance).toBe('object');
+        done();
+      }
+    };
+    spyOn(foo, 'bar').and.callThrough();
+
+    configure(frameworkConfig, foo.bar);
+    expect(foo.bar).toHaveBeenCalled();
+  });
+
+  it('should throw custom error message if no callback is provided', () => {
+    expect(() => { configure(frameworkConfig); })
+      .toThrow('You need to provide a callback method to properly configure the library');
   });
 });

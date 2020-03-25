@@ -51,8 +51,6 @@ System.register([], function (_export, _context) {
 
         return Connector;
       }());
-
-      _export("Connector", Connector);
     }
   };
 });
