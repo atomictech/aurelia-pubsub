@@ -1,6 +1,14 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [0.6.1](https://github.com/atomictech/aurelia-pubsub/compare/v0.6.0...v0.6.1) (2020-05-06)
+
+
+### Bug Fixes
+
+* **all:** Update of the dependencies and make it on par with our code standards. ([6cac78c](https://github.com/atomictech/aurelia-pubsub/commit/6cac78c5b1ad8488b0844ef308bc8fc588c2eef2))
+* **stomp:** impossible to subscribe when the client is not connected. ([035968f](https://github.com/atomictech/aurelia-pubsub/commit/035968f9256bdb36708d40b57758daef086d7d26))
 
 <a name="0.6.0"></a>
 # [0.6.0](https://github.com/atomictech/aurelia-pubsub/compare/v0.5.1...v0.6.0) (2018-05-24)
