@@ -17,6 +17,7 @@ export class StompConnector extends Connector {
     this.config = config;
 
     this.waitingMessages = [];
+    this.waitingSubscriptions = [];
     this.isConnected = false;
     this.localHeartbeat = null;
     this.subscribeDestinations = {};
@@ -47,6 +48,10 @@ export class StompConnector extends Connector {
     //   this._handleHeartbeat();
     // }
 
+    if (this.waitingSubscriptions.length) {
+      this._doWaitingSubscriptions();
+    }
+
     if (this.waitingMessages.length) {
       this._publishWaitingMessages();
     }
@@ -75,6 +80,16 @@ export class StompConnector extends Connector {
     for (let wrapper of this.waitingMessages) {
       this.publish(this._forgeDestination(wrapper.destination, wrapper.toQueue), wrapper.message);
     }
+
+    this.waitingMessages = [];
+  }
+
+  _doWaitingSubscriptions() {
+    for (const wrapper of this.waitingSubscriptions) {
+      this._clientSubscribe(wrapper.destination, wrapper.callback, wrapper.toQueue);
+    }
+
+    this.waitingSubscriptions = [];
   }
 
   _bufferMessage(wrapper) {
@@ -83,6 +98,10 @@ export class StompConnector extends Connector {
       console.log('warning, StompConnector dropped waiting message, waiting buffer is full!');
     }
     this.waitingMessages.push(wrapper);
+  }
+
+  _bufferSubscription(wrapper) {
+    this.waitingSubscriptions.push(wrapper);
   }
 
   _clientCheck() {
@@ -140,6 +159,16 @@ export class StompConnector extends Connector {
   }
 
   subscribe(destination, callback, toQueue = false) {
+    if (!this.isConnected) {
+      const subscription = { destination, callback, toQueue };
+
+      this._bufferSubscription(subscription);
+    } else {
+      this._clientSubscribe(destination, callback, toQueue);
+    }
+  }
+
+  _clientSubscribe(destination, callback, toQueue = false) {
     this.subscribeDestinations[destination] = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
   }
 

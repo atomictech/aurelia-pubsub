@@ -13,11 +13,15 @@ define(["exports", "lodash", "stompjs", "./connector"], function (_exports, _lod
 
   function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-  function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+  function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
   function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-  function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+  function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+  function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+  function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
   function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
@@ -26,10 +30,6 @@ define(["exports", "lodash", "stompjs", "./connector"], function (_exports, _lod
   function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
   function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-  function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-  function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -70,6 +70,7 @@ define(["exports", "lodash", "stompjs", "./connector"], function (_exports, _lod
       _this.stomp = stomp;
       _this.config = config;
       _this.waitingMessages = [];
+      _this.waitingSubscriptions = [];
       _this.isConnected = false;
       _this.localHeartbeat = null;
       _this.subscribeDestinations = {};
@@ -101,6 +102,10 @@ define(["exports", "lodash", "stompjs", "./connector"], function (_exports, _lod
       key: "_connectionCallback",
       value: function _connectionCallback() {
         this.isConnected = true;
+
+        if (this.waitingSubscriptions.length) {
+          this._doWaitingSubscriptions();
+        }
 
         if (this.waitingMessages.length) {
           this._publishWaitingMessages();
@@ -138,6 +143,28 @@ define(["exports", "lodash", "stompjs", "./connector"], function (_exports, _lod
         } finally {
           _iterator.f();
         }
+
+        this.waitingMessages = [];
+      }
+    }, {
+      key: "_doWaitingSubscriptions",
+      value: function _doWaitingSubscriptions() {
+        var _iterator2 = _createForOfIteratorHelper(this.waitingSubscriptions),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var wrapper = _step2.value;
+
+            this._clientSubscribe(wrapper.destination, wrapper.callback, wrapper.toQueue);
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+
+        this.waitingSubscriptions = [];
       }
     }, {
       key: "_bufferMessage",
@@ -148,6 +175,11 @@ define(["exports", "lodash", "stompjs", "./connector"], function (_exports, _lod
         }
 
         this.waitingMessages.push(wrapper);
+      }
+    }, {
+      key: "_bufferSubscription",
+      value: function _bufferSubscription(wrapper) {
+        this.waitingSubscriptions.push(wrapper);
       }
     }, {
       key: "_clientCheck",
@@ -204,6 +236,23 @@ define(["exports", "lodash", "stompjs", "./connector"], function (_exports, _lod
     }, {
       key: "subscribe",
       value: function subscribe(destination, callback) {
+        var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+        if (!this.isConnected) {
+          var subscription = {
+            destination: destination,
+            callback: callback,
+            toQueue: toQueue
+          };
+
+          this._bufferSubscription(subscription);
+        } else {
+          this._clientSubscribe(destination, callback, toQueue);
+        }
+      }
+    }, {
+      key: "_clientSubscribe",
+      value: function _clientSubscribe(destination, callback) {
         var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         this.subscribeDestinations[destination] = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
       }

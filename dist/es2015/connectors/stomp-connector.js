@@ -29,6 +29,7 @@ class StompConnector extends _connector.Connector {
     this.stomp = stomp;
     this.config = config;
     this.waitingMessages = [];
+    this.waitingSubscriptions = [];
     this.isConnected = false;
     this.localHeartbeat = null;
     this.subscribeDestinations = {};
@@ -55,6 +56,10 @@ class StompConnector extends _connector.Connector {
   _connectionCallback() {
     this.isConnected = true;
 
+    if (this.waitingSubscriptions.length) {
+      this._doWaitingSubscriptions();
+    }
+
     if (this.waitingMessages.length) {
       this._publishWaitingMessages();
     }
@@ -77,6 +82,16 @@ class StompConnector extends _connector.Connector {
     for (var wrapper of this.waitingMessages) {
       this.publish(this._forgeDestination(wrapper.destination, wrapper.toQueue), wrapper.message);
     }
+
+    this.waitingMessages = [];
+  }
+
+  _doWaitingSubscriptions() {
+    for (var wrapper of this.waitingSubscriptions) {
+      this._clientSubscribe(wrapper.destination, wrapper.callback, wrapper.toQueue);
+    }
+
+    this.waitingSubscriptions = [];
   }
 
   _bufferMessage(wrapper) {
@@ -86,6 +101,10 @@ class StompConnector extends _connector.Connector {
     }
 
     this.waitingMessages.push(wrapper);
+  }
+
+  _bufferSubscription(wrapper) {
+    this.waitingSubscriptions.push(wrapper);
   }
 
   _clientCheck() {
@@ -136,6 +155,22 @@ class StompConnector extends _connector.Connector {
   }
 
   subscribe(destination, callback) {
+    var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+    if (!this.isConnected) {
+      var subscription = {
+        destination,
+        callback,
+        toQueue
+      };
+
+      this._bufferSubscription(subscription);
+    } else {
+      this._clientSubscribe(destination, callback, toQueue);
+    }
+  }
+
+  _clientSubscribe(destination, callback) {
     var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     this.subscribeDestinations[destination] = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
   }
