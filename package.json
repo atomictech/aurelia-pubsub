@@ -41,7 +41,7 @@
     "coveralls": "^3.0.0",
     "cross-env": "^7.0.2",
     "del": "^5.1.0",
-    "eslint": "^6.8.0",
+    "eslint": "^7.4.0",
     "gulp": "^4.0.0",
     "gulp-babel": "^8.0.0",
     "gulp-eslint": "^6.0.0",
@@ -62,7 +62,7 @@
     "reconnecting-websocket": "^4.0.0-rc3",
     "require-dir": "^1.0.0",
     "socket.io-client": "^2.0.3",
-    "standard-version": "^7.1.0",
+    "standard-version": "^8.0.2",
     "stompjs": "^2.3.3",
     "vinyl-paths": "^3.0.1",
     "yargs": "^15.3.1"
