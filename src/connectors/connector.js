@@ -15,7 +15,7 @@ export class Connector {
     throw new Error('Cannot use abstract Connector.');
   }
 
-  unsubscribe(destination) {
+  unsubscribe(destination, subscriptionId = undefined) {
     throw new Error('Cannot use abstract Connector.');
   }
 }

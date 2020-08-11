@@ -155,14 +155,37 @@ System.register(["socket.io-client", "./connector"], function (_export, _context
         }, {
           key: "subscribe",
           value: function subscribe(destination, callback) {
-            this.subscribeDestinations[destination] = callback;
             this.client.on(destination, callback);
+
+            if (!this.subscribeDestinations[destionation]) {
+              this.subscribeDestinations[destination] = [];
+            }
+
+            var id = "sub-".concat(this.subscribeDestinations.length);
+            this.subscribeDestinations[destination].push({
+              id: id,
+              callback: callback
+            });
+            return id;
           }
         }, {
           key: "unsubscribe",
-          value: function unsubscribe(destination) {
-            delete this.subscribeDestinations[destination];
-            this.client.off(destination);
+          value: function unsubscribe(destination, subscriptionId) {
+            var _this3 = this;
+
+            if (!this.subscribeDestinations[destination]) {
+              return;
+            }
+
+            this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(function (sbuscription) {
+              var filterValue = !subscriptionId || subscriptionId === subscription.id;
+
+              if (filterValue) {
+                _this3.client.off(destination, subscription.callback);
+              }
+
+              return !filterValue;
+            });
           }
         }]);
 

@@ -251,19 +251,38 @@ var StompConnector = function (_Connector) {
 
         this._bufferSubscription(subscription);
       } else {
-        this._clientSubscribe(destination, callback, toQueue);
+        return this._clientSubscribe(destination, callback, toQueue);
       }
     }
   }, {
     key: "_clientSubscribe",
     value: function _clientSubscribe(destination, callback) {
       var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      this.subscribeDestinations[destination] = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
+      var subscription = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
+
+      if (!this.subscribeDestinations[destination]) {
+        this.subscribeDestinations[destination] = [];
+      }
+
+      this.subscribeDestinations[destination].push(subscription);
+      return subscription.id;
     }
   }, {
     key: "unsubscribe",
-    value: function unsubscribe(destination) {
-      this.subscribeDestinations[destination].unsubscribe();
+    value: function unsubscribe(destination, subscriptionId) {
+      if (!this.subscribeDestinations[destination]) {
+        return;
+      }
+
+      this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(function (subscription) {
+        var filterValue = !subscriptionId || subscriptionId === subscription.id;
+
+        if (filterValue) {
+          subscription.unsubscribe();
+        }
+
+        return !filterValue;
+      });
     }
   }]);
 

@@ -88,12 +88,32 @@ export class SocketIOConnector extends Connector {
   }
 
   subscribe(destination, callback) {
-    this.subscribeDestinations[destination] = callback;
     this.client.on(destination, callback);
+
+    if (!this.subscribeDestinations[destionation]) {
+      this.subscribeDestinations[destination] = [];
+    }
+
+    const id = `sub-${this.subscribeDestinations.length}`;
+    this.subscribeDestinations[destination].push({ id, callback });
+
+    return id;
   }
 
-  unsubscribe(destination) {
-    delete this.subscribeDestinations[destination];
-    this.client.off(destination);
+  unsubscribe(destination, subscriptionId) {
+    if (!this.subscribeDestinations[destination]) {
+      return;
+    }
+
+    this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter( sbuscription => {
+      // If subscriptionId is not provided, then all subscriptions are removed.
+      const filterValue = !subscriptionId || subscriptionId === subscription.id;
+      if (filterValue) {
+        this.client.off(destination, subscription.callback);
+      }
+
+      // Return the contrary, so we can keep the 'filtered out' values
+      return !filterValue;
+    });
   }
 }

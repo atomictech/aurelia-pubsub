@@ -164,15 +164,35 @@ export class StompConnector extends Connector {
 
       this._bufferSubscription(subscription);
     } else {
-      this._clientSubscribe(destination, callback, toQueue);
+      return this._clientSubscribe(destination, callback, toQueue);
     }
   }
 
   _clientSubscribe(destination, callback, toQueue = false) {
-    this.subscribeDestinations[destination] = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
+    const subscription = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
+
+    if (!this.subscribeDestinations[destination]) {
+      this.subscribeDestinations[destination] = [];
+    }
+    this.subscribeDestinations[destination].push(subscription);
+
+    return subscription.id;
   }
 
-  unsubscribe(destination) {
-    this.subscribeDestinations[destination].unsubscribe();
+  unsubscribe(destination, subscriptionId) {
+    if (!this.subscribeDestinations[destination]) {
+      return;
+    }
+
+    this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(subscription => {
+      // If subscriptionId is not provided, then all subscriptions are removed.
+      const filterValue = !subscriptionId || subscriptionId === subscription.id;
+      if (filterValue) {
+        subscription.unsubscribe();
+      }
+
+      // Return the contrary, so we can keep the 'filtered out' values
+      return !filterValue;
+    });
   }
 }

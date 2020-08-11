@@ -100,13 +100,34 @@ class SocketIOConnector extends _connector.Connector {
   }
 
   subscribe(destination, callback) {
-    this.subscribeDestinations[destination] = callback;
     this.client.on(destination, callback);
+
+    if (!this.subscribeDestinations[destionation]) {
+      this.subscribeDestinations[destination] = [];
+    }
+
+    var id = "sub-".concat(this.subscribeDestinations.length);
+    this.subscribeDestinations[destination].push({
+      id,
+      callback
+    });
+    return id;
   }
 
-  unsubscribe(destination) {
-    delete this.subscribeDestinations[destination];
-    this.client.off(destination);
+  unsubscribe(destination, subscriptionId) {
+    if (!this.subscribeDestinations[destination]) {
+      return;
+    }
+
+    this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(sbuscription => {
+      var filterValue = !subscriptionId || subscriptionId === subscription.id;
+
+      if (filterValue) {
+        this.client.off(destination, subscription.callback);
+      }
+
+      return !filterValue;
+    });
   }
 
 }

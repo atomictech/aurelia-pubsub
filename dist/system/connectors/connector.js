@@ -45,6 +45,7 @@ System.register([], function (_export, _context) {
         }, {
           key: "unsubscribe",
           value: function unsubscribe(destination) {
+            var subscriptionId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
             throw new Error('Cannot use abstract Connector.');
           }
         }]);

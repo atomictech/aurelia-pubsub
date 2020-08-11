@@ -166,17 +166,36 @@ class StompConnector extends _connector.Connector {
 
       this._bufferSubscription(subscription);
     } else {
-      this._clientSubscribe(destination, callback, toQueue);
+      return this._clientSubscribe(destination, callback, toQueue);
     }
   }
 
   _clientSubscribe(destination, callback) {
     var toQueue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    this.subscribeDestinations[destination] = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
+    var subscription = this.client.subscribe(this._forgeDestination(destination, toQueue), callback);
+
+    if (!this.subscribeDestinations[destination]) {
+      this.subscribeDestinations[destination] = [];
+    }
+
+    this.subscribeDestinations[destination].push(subscription);
+    return subscription.id;
   }
 
-  unsubscribe(destination) {
-    this.subscribeDestinations[destination].unsubscribe();
+  unsubscribe(destination, subscriptionId) {
+    if (!this.subscribeDestinations[destination]) {
+      return;
+    }
+
+    this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(subscription => {
+      var filterValue = !subscriptionId || subscriptionId === subscription.id;
+
+      if (filterValue) {
+        subscription.unsubscribe();
+      }
+
+      return !filterValue;
+    });
   }
 
 }
