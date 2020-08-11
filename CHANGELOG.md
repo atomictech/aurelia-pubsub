@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/atomictech/aurelia-pubsub/compare/v0.6.1...v0.7.0) (2020-08-11)
+
+
+### Bug Fixes
+
+* **all:** Update of the dependencies. ([9575618](https://github.com/atomictech/aurelia-pubsub/commit/95756182dcf4ee2e9510bc58b7bc6c8838472436))
+
 ### [0.6.1](https://github.com/atomictech/aurelia-pubsub/compare/v0.6.0...v0.6.1) (2020-05-06)
 
 
