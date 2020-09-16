@@ -119,7 +119,7 @@ class SocketIOConnector extends _connector.Connector {
       return;
     }
 
-    this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(sbuscription => {
+    this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(subscription => {
       var filterValue = !subscriptionId || subscriptionId === subscription.id;
 
       if (filterValue) {

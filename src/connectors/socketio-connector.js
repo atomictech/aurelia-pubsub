@@ -105,7 +105,7 @@ export class SocketIOConnector extends Connector {
       return;
     }
 
-    this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter( sbuscription => {
+    this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(subscription => {
       // If subscriptionId is not provided, then all subscriptions are removed.
       const filterValue = !subscriptionId || subscriptionId === subscription.id;
       if (filterValue) {

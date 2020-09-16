@@ -178,7 +178,7 @@ var SocketIOConnector = function (_Connector) {
         return;
       }
 
-      this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(function (sbuscription) {
+      this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(function (subscription) {
         var filterValue = !subscriptionId || subscriptionId === subscription.id;
 
         if (filterValue) {

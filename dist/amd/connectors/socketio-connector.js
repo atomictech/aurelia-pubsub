@@ -176,7 +176,7 @@ define(["exports", "socket.io-client", "./connector"], function (_exports, _sock
           return;
         }
 
-        this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(function (sbuscription) {
+        this.subscribeDestinations[destination] = this.subscribeDestinations[destination].filter(function (subscription) {
           var filterValue = !subscriptionId || subscriptionId === subscription.id;
 
           if (filterValue) {
