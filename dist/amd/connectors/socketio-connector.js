@@ -156,7 +156,7 @@ define(["exports", "socket.io-client", "./connector"], function (_exports, _sock
       value: function subscribe(destination, callback) {
         this.client.on(destination, callback);
 
-        if (!this.subscribeDestinations[destionation]) {
+        if (!this.subscribeDestinations[destination]) {
           this.subscribeDestinations[destination] = [];
         }
 
