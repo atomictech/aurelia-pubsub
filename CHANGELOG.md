@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.4](https://github.com/atomictech/aurelia-pubsub/compare/v0.7.3...v0.7.4) (2020-09-17)
+
+
+### Bug Fixes
+
+* **socketio-connector:** Ensure the subscription id is unique. ([37f2fa9](https://github.com/atomictech/aurelia-pubsub/commit/37f2fa91a6b4ceaaefe74925f13fa95303aaae1f))
+
 ### [0.7.3](https://github.com/atomictech/aurelia-pubsub/compare/v0.7.2...v0.7.3) (2020-09-16)
 
 
