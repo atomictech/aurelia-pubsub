@@ -161,7 +161,7 @@ System.register(["socket.io-client", "./connector"], function (_export, _context
               this.subscribeDestinations[destination] = [];
             }
 
-            var id = "sub-".concat(this.subscribeDestinations.length);
+            var id = "sub-".concat(destination, "-").concat(this.subscribeDestinations[destination].length);
             this.subscribeDestinations[destination].push({
               id: id,
               callback: callback

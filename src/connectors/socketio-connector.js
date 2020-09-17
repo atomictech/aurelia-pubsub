@@ -94,7 +94,7 @@ export class SocketIOConnector extends Connector {
       this.subscribeDestinations[destination] = [];
     }
 
-    const id = `sub-${this.subscribeDestinations.length}`;
+    const id = `sub-${destination}-${this.subscribeDestinations[destination].length}`;
     this.subscribeDestinations[destination].push({ id, callback });
 
     return id;

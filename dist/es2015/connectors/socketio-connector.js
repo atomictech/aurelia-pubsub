@@ -106,7 +106,7 @@ class SocketIOConnector extends _connector.Connector {
       this.subscribeDestinations[destination] = [];
     }
 
-    var id = "sub-".concat(this.subscribeDestinations.length);
+    var id = "sub-".concat(destination, "-").concat(this.subscribeDestinations[destination].length);
     this.subscribeDestinations[destination].push({
       id,
       callback
